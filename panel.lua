@@ -1,9 +1,12 @@
 -- os.loadAPI("apis/panel") returns a global named "panel"
+
+local active_panel
+
 function new(self, x, y, w, h)
   -- set inheritance of global "panel" to term
   -- only do this once
   if getmetatable(self) == nil then
-    setmetatable(self, {__index = term})
+    setmetatable(self, {__index = term.native})
   end
   -- create new object
   local o = {}
@@ -21,18 +24,17 @@ function new(self, x, y, w, h)
 end
 
 function activate(self)
+  active_panel = self
   term.restore()
   term.redirect(self)
-  self.setCursorPos()
-  self.setCursorBlink()
 end
 
 function getSize(self)
-  return self.w, self.h
+  return active_panel.w, active_panel.h
 end
-
+ --[[
 function getCursorPos(self)
-  return self.c, self.r
+  return ac
 end
 
 function setCursorPos(self, c, r)
@@ -46,7 +48,7 @@ function setCursorBlink(self, blink)
   term.setCursorBlink(self.blink)
 end
 
---[[
+
 Panel:write
 Panel:clear
 Panel:clearLine
