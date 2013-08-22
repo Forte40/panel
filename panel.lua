@@ -1,8 +1,4 @@
-Panel = {}
-setmetatable(Panel, Panel)
-Panel.__index = term
-
-function Panel:new(x, y, w, h)
+function new(self, x, y, w, h)
   local o = {}
   o.x = x
   o.y = y
@@ -12,33 +8,32 @@ function Panel:new(x, y, w, h)
   o.r = 0
   o.blink = true
   setmetatable(o, self)
-  self.__index = self
   return o
 end
 
-function Panel:activate()
+function activate(self)
   term.restore()
   term.redirect(self)
   self.setCursorPos()
   self.setCursorBlink()
 end
 
-function Panel:getSize()
-  return w, h
+function getSize(self)
+  return self.w, self.h
 end
 
-function Panel:getCursorPos()
-  return c, r
+function getCursorPos(self)
+  return self.c, self.r
 end
 
-function Panel:setCursorPos(c, r)
+function setCursorPos(self, c, r)
   self.c = c or self.c
   self.r = r or self.r
   term.setCursorPos(self.x + self.c, self.y + self.r)
 end
 
-function Panel:setCursorBlink(blink)
-  self.blink = blink != nil and blink or self.blink
+function setCursorBlink(self, blink)
+  self.blink = blink ~= nil and blink or self.blink
   term.setCursorBlink(self.blink)
 end
 
@@ -58,3 +53,10 @@ Panel:setTextColour
 Panel:setBackgroundColor
 Panel:setBackgroundColour
 ]]
+
+local env = getfenv()
+for k,v in pairs(term) do
+  if not env[k] then
+    env[k] = v
+  end
+end
