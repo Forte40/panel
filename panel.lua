@@ -1,11 +1,19 @@
 local active
 
-function activate(self)
+function redirect(self)
+  if active then
+    term.restore()
+  end
   active = self
-  term.restore()
   term.redirect(active)
   active.setCursorPos()
   active.setCursorBlink()
+end
+
+function restore()
+  if active then
+    term.restore()
+  end
 end
 
 local function dump()
@@ -18,7 +26,7 @@ end
 
 local P = {}
 
-P.activate = activate
+P.redirect = redirect
 
 function P.getSize()
   return active.w, active.h
