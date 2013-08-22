@@ -40,7 +40,7 @@ end
 function setCursorPos(c, r)
   active.c = c or active.c
   active.r = r or active.r
-  term.native.setCursorPos(active.x + active.c, active.y + active.r)
+  term.native.setCursorPos(active.x + active.c - 1, active.y + active.r - 1)
 end
 
 function setCursorBlink(blink)
@@ -48,14 +48,31 @@ function setCursorBlink(blink)
   term.native.setCursorBlink(active.blink)
 end
 
---[[
-Panel:write
-Panel:clear
-Panel:clearLine
-Panel:scroll
+function clear()
+  for row = active.y, active.y + active.h - 1 do
+    term.native.setCursorPos(active.x, row)
+    term.native.write(string.rep(" ", active.w))
+  end
+  active.setCursorPos(1, 1)
+end
 
-Panel:redirect
-Panel:restore
+function clearLine()
+  c, r = 
+  term.native.setCursorPos(active.x, active.y + active.r - 1)
+  term.native.write(string.rep(" ", active.w))
+  active.setCursorPos(1)
+end
+
+function write(...)
+  term.native.write(...)
+  c, r = term.native.getCursorPos()
+  active.c = c - active.x + 1
+  active.r = r - active.y + 1
+end
+
+
+--[[
+Panel:scroll
 
 Panel:isColor
 Panel:isColour
