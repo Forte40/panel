@@ -4,6 +4,8 @@ function activate(self)
   active = self
   term.restore()
   term.redirect(active)
+  active.setCursorPos()
+  active.setCursorBlink()
 end
 
 local function dump()
@@ -16,13 +18,13 @@ end
 
 local P = {}
 
-function P.activate = activate
+P.activate = activate
 
-function P.getSize(self)
+function P.getSize()
   return active.w, active.h
 end
 
-function P.getCursorPos(self)
+function P.getCursorPos()
   return active.c, active.r
 end
 
@@ -41,7 +43,7 @@ function P.clear()
   for i = 1, active.h do
     active.lines[i] = string.rep(" ", active.w)
   end
-  active.dump()
+  dump()
 end
 
 function P.clearLine()
@@ -57,7 +59,8 @@ function P.scroll(count)
     table.remove(active.lines, 1)
     table.insert(active.lines, string.rep(" ", active.w))
   end
-  active.dump()
+  dump()
+  active.setCursorPos(1, active.h)
 end
 
 function P.write(msg)
@@ -78,7 +81,7 @@ P.__index = P
 function new(self, x, y, w, h)
   local o = {
     x = x, y = y, w = w, h = h,
-    c = 0, r = 0, blink = true,
+    c = 1, r = 1, blink = true,
     lines = {}
   }
   for i = 1, o.h do
