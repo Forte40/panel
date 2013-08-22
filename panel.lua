@@ -1,27 +1,4 @@
--- os.loadAPI("apis/panel") returns a global named "panel"
-
 local active
-
-function new(self, x, y, w, h)
-  -- set inheritance of global "panel" to term
-  -- only do this once
-  if getmetatable(self) == nil then
-    setmetatable(self, {__index = term.native})
-  end
-  -- create new object
-  local o = {}
-  o.x = x
-  o.y = y
-  o.w = w
-  o.h = h
-  o.c = 0
-  o.r = 0
-  o.blink = true
-  -- set inheritance of new object to "panel"
-  setmetatable(o, self)
-  self.__index = self
-  return o
-end
 
 function activate(self)
   active = self
@@ -29,55 +6,84 @@ function activate(self)
   term.redirect(active)
 end
 
-function getSize(self)
+local function dump()
+  for row = 1, active.h do
+    active.setCursorPos(1, row)
+    term.native.write(active.lines[row])
+  end
+  active.setCursorPos(1, 1)
+end
+
+local P = {}
+
+function P.activate = activate
+
+function P.getSize(self)
   return active.w, active.h
 end
 
-function getCursorPos(self)
+function P.getCursorPos(self)
   return active.c, active.r
 end
 
-function setCursorPos(c, r)
+function P.setCursorPos(c, r)
   active.c = c or active.c
   active.r = r or active.r
   term.native.setCursorPos(active.x + active.c - 1, active.y + active.r - 1)
 end
 
-function setCursorBlink(blink)
+function P.setCursorBlink(blink)
   active.blink = blink ~= nil and blink or active.blink
   term.native.setCursorBlink(active.blink)
 end
 
-function clear()
-  for row = active.y, active.y + active.h - 1 do
-    term.native.setCursorPos(active.x, row)
-    term.native.write(string.rep(" ", active.w))
+function P.clear()
+  for i = 1, active.h do
+    active.lines[i] = string.rep(" ", active.w)
   end
-  active.setCursorPos(1, 1)
+  active.dump()
 end
 
-function clearLine()
-  c, r = 
+function P.clearLine()
+  active.lines[active.r] = string.rep(" ", active.w)
   term.native.setCursorPos(active.x, active.y + active.r - 1)
   term.native.write(string.rep(" ", active.w))
   active.setCursorPos(1)
 end
 
-function write(...)
-  term.native.write(...)
+function P.scroll(count)
+  count = count or 1
+  for i = 1, count do
+    table.remove(active.lines, 1)
+    table.insert(active.lines, string.rep(" ", active.w))
+  end
+  active.dump()
+end
+
+function P.write(msg)
+  local max = active.w - active.c + 1
+  msg = tostring(msg):sub(1, max)
+  active.lines[active.r] = active.lines[active.r]:sub(1,active.c - 1)
+                         .. msg
+                         .. active.lines[active.r]:sub(active.c + #msg, active.w)
+  term.native.write(msg)
   c, r = term.native.getCursorPos()
   active.c = c - active.x + 1
   active.r = r - active.y + 1
 end
 
+setmetatable(P, {__index = term.native})
+P.__index = P
 
---[[
-Panel:scroll
-
-Panel:isColor
-Panel:isColour
-Panel:setTextColor
-Panel:setTextColour
-Panel:setBackgroundColor
-Panel:setBackgroundColour
-]]
+function new(self, x, y, w, h)
+  local o = {
+    x = x, y = y, w = w, h = h,
+    c = 0, r = 0, blink = true,
+    lines = {}
+  }
+  for i = 1, o.h do
+    o.lines[i] = string.rep(" ", o.w)
+  end
+  setmetatable(o, P)
+  return o
+end
