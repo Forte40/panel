@@ -1,6 +1,6 @@
 -- os.loadAPI("apis/panel") returns a global named "panel"
 
-local active_panel
+local active
 
 function new(self, x, y, w, h)
   -- set inheritance of global "panel" to term
@@ -24,31 +24,31 @@ function new(self, x, y, w, h)
 end
 
 function activate(self)
-  active_panel = self
+  active = self
   term.restore()
-  term.redirect(self)
+  term.redirect(active)
 end
 
 function getSize(self)
-  return active_panel.w, active_panel.h
+  return active.w, active.h
 end
- --[[
+
 function getCursorPos(self)
-  return ac
+  return active.c, active.r
 end
 
-function setCursorPos(self, c, r)
-  self.c = c or self.c
-  self.r = r or self.r
-  term.setCursorPos(self.x + self.c, self.y + self.r)
+function setCursorPos(c, r)
+  active.c = c or active.c
+  active.r = r or active.r
+  term.native.setCursorPos(active.x + active.c, active.y + active.r)
 end
 
-function setCursorBlink(self, blink)
-  self.blink = blink ~= nil and blink or self.blink
-  term.setCursorBlink(self.blink)
+function setCursorBlink(blink)
+  active.blink = blink ~= nil and blink or active.blink
+  term.native.setCursorBlink(active.blink)
 end
 
-
+--[[
 Panel:write
 Panel:clear
 Panel:clearLine
