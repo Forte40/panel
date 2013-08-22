@@ -1,4 +1,11 @@
+-- os.loadAPI("apis/panel") returns a global named "panel"
 function new(self, x, y, w, h)
+  -- set inheritance of global "panel" to term
+  -- only do this once
+  if getmetatable(self) == nil then
+    setmetatable(self, {__index = term})
+  end
+  -- create new object
   local o = {}
   o.x = x
   o.y = y
@@ -7,7 +14,9 @@ function new(self, x, y, w, h)
   o.c = 0
   o.r = 0
   o.blink = true
+  -- set inheritance of new object to "panel"
   setmetatable(o, self)
+  self.__index = self
   return o
 end
 
@@ -53,10 +62,3 @@ Panel:setTextColour
 Panel:setBackgroundColor
 Panel:setBackgroundColour
 ]]
-
-local env = getfenv()
-for k,v in pairs(term) do
-  if not env[k] then
-    env[k] = v
-  end
-end
