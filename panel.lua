@@ -118,16 +118,16 @@ function new(x, y, w, h)
   end
   -- translate negative values to distance from end
   if o.x < 0 then
-    o.x = width - o.x + 1
+    o.x = width + o.x + 1
   end
   if o.y < 0 then
-    o.y = height - o.y + 1
+    o.y = height + o.y + 1
   end
   if o.w < 0 then
-    o.w = width - o.w + 1
+    o.w = width + o.w + 1
   end
   if o.h < 0 then
-    o.h = height - o.h + 1
+    o.h = height + o.h + 1
   end
   for i = 1, o.h do
     o.lines[i] = string.rep(" ", o.w)
