@@ -1,3 +1,5 @@
+-- http://pastebin.com/aibwRhj1
+
 local active
 
 function redirect(self)
@@ -86,12 +88,41 @@ end
 setmetatable(P, {__index = term.native})
 P.__index = P
 
-function new(self, x, y, w, h)
-  local o = {
-    x = x, y = y, w = w, h = h,
-    c = 1, r = 1, blink = true,
-    lines = {}
-  }
+function new(x, y, w, h)
+  -- get term size for relative positioning
+  local width, height = term.getSize()
+  if active then
+    term.restore()
+    width, height = term.getSize()
+    term.redirect(active)
+  end
+  local o
+  if type(x) == "table" then
+    -- named parameters passed in
+    o = x
+    o.x = o.x or 1
+    o.y = o.y or 1
+    o.w = o.w or width
+    o.h = o.h or height
+    o.c = o.c or 1
+    o.r = o.r or 1
+    o.blink = o.blink ~= nil and o.blink or true
+    o.lines = o.lines or {}
+  else
+    -- positional parameters passed in
+    o = {
+      x = x, y = y, w = w, h = h,
+      c = 1, r = 1, blink = true,
+      lines = {}
+    }
+  end
+  -- translate negative values to distance from end
+  if o.x < 0 then
+    o.x = width - o.x + 1
+  end
+  if o.y < 0 then
+    o.y = height - o.y + 1
+  end
   for i = 1, o.h do
     o.lines[i] = string.rep(" ", o.w)
   end
