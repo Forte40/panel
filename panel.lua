@@ -10,6 +10,8 @@ function redirect(self)
   term.redirect(active)
   active.setCursorPos()
   active.setCursorBlink()
+  active.setBackgroundColor()
+  active.setTextColor()
 end
 
 function restore()
@@ -47,6 +49,16 @@ end
 function P.setCursorBlink(blink)
   active.blink = blink ~= nil and blink or active.blink
   term.native.setCursorBlink(active.blink)
+end
+
+function P.setBackgroundColor(color)
+  active.backgroundColor = color or active.backgroundColor
+  term.native.setBackgroundColor(active.backgroundColor)
+end
+
+function P.setTextColor(color)
+  active.textColor = color or active.textColor
+  term.native.setTextColor(active.textColor)
 end
 
 function P.clear()
@@ -107,12 +119,15 @@ function new(x, y, w, h)
     o.c = o.c or 1
     o.r = o.r or 1
     o.blink = o.blink ~= nil and o.blink or true
+    o.textColor = o.textColor or colors.white
+    o.backgroundColor = o.backgroundColor or colors.black
     o.lines = o.lines or {}
   else
     -- positional parameters passed in
     o = {
       x = x, y = y, w = w, h = h,
       c = 1, r = 1, blink = true,
+      textColor = colors.white, backgroundColor = colors.black,
       lines = {}
     }
   end
