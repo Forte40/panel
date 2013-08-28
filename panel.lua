@@ -69,10 +69,11 @@ function P.clear()
 end
 
 function P.clearLine()
+  local x, y = term.native.getCursorPos()
   active.lines[active.r] = string.rep(" ", active.w)
   term.native.setCursorPos(active.x, active.y + active.r - 1)
   term.native.write(string.rep(" ", active.w))
-  active.setCursorPos(1)
+  active.setCursorPos(x, y)
 end
 
 function P.scroll(count)
