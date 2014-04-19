@@ -98,6 +98,10 @@ function P.write(msg)
   active.r = r - active.y + 1
 end
 
+function P.isColor()
+  return term.native.isColor()
+end
+
 setmetatable(P, {__index = term.native})
 P.__index = P
 
