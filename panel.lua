@@ -23,7 +23,7 @@ end
 local function dump()
   for row = 1, active.h do
     active.setCursorPos(1, row)
-    term.write(active.lines[row])
+    term.native.write(active.lines[row])
   end
   active.setCursorPos(1, 1)
 end
@@ -43,22 +43,22 @@ end
 function P.setCursorPos(c, r)
   active.c = c or active.c
   active.r = r or active.r
-  term.setCursorPos(active.x + active.c - 1, active.y + active.r - 1)
+  term.native.setCursorPos(active.x + active.c - 1, active.y + active.r - 1)
 end
 
 function P.setCursorBlink(blink)
   active.blink = blink ~= nil and blink or active.blink
-  term.setCursorBlink(active.blink)
+  term.native.setCursorBlink(active.blink)
 end
 
 function P.setBackgroundColor(color)
   active.backgroundColor = color or active.backgroundColor
-  term.setBackgroundColor(active.backgroundColor)
+  term.native.setBackgroundColor(active.backgroundColor)
 end
 
 function P.setTextColor(color)
   active.textColor = color or active.textColor
-  term.setTextColor(active.textColor)
+  term.native.setTextColor(active.textColor)
 end
 
 function P.clear()
@@ -69,10 +69,10 @@ function P.clear()
 end
 
 function P.clearLine()
-  local x, y = term.getCursorPos()
+  local x, y = term.native.getCursorPos()
   active.lines[active.r] = string.rep(" ", active.w)
-  term.setCursorPos(active.x, active.y + active.r - 1)
-  term.write(string.rep(" ", active.w))
+  term.native.setCursorPos(active.x, active.y + active.r - 1)
+  term.native.write(string.rep(" ", active.w))
   active.setCursorPos(x, y)
 end
 
@@ -92,21 +92,17 @@ function P.write(msg)
   active.lines[active.r] = active.lines[active.r]:sub(1,active.c - 1)
                          .. msg
                          .. active.lines[active.r]:sub(active.c + #msg, active.w)
-  term.write(msg)
-  c, r = term.getCursorPos()
+  term.native.write(msg)
+  c, r = term.native.getCursorPos()
   active.c = c - active.x + 1
   active.r = r - active.y + 1
 end
 
 function P.isColor()
-  return term.isColor()
+  return term.native.isColor()
 end
 
-function P.isColour()
-  return term.isColour()
-end
-
-setmetatable(P, {__index = term})
+setmetatable(P, {__index = term.native})
 P.__index = P
 
 function new(x, y, w, h)
