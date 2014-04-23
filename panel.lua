@@ -1,5 +1,15 @@
 -- http://pastebin.com/aibwRhj1
 
+local mainTerm = term.current()
+
+function setTerm(t)
+  mainTerm = t
+end
+
+function redirect()
+  term.redirect(mainTerm)
+end
+
 function new(x, y, w, h, textColor, backgroundColor, blink)
   -- get term size for relative positioning
   local width, height = term.getSize()
@@ -34,11 +44,14 @@ function new(x, y, w, h, textColor, backgroundColor, blink)
     backgroundColor = colors.black
   end
   if blink == nil then
-    blink == true
+    blink = true
   end
-  local win = window.create(term, x, y, w, h)
+  local win = window.create(mainTerm, x, y, w, h)
   win.setTextColor(textColor)
   win.setBackgroundColor(backgroundColor)
   win.setCursorBlink(blink)
+  win.redirect = function()
+    term.redirect(win)
+  end
   return win
 end
