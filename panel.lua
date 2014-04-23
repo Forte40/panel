@@ -53,5 +53,8 @@ function new(x, y, w, h, textColor, backgroundColor, blink)
   win.redirect = function()
     term.redirect(win)
   end
+  local prevTerm = term.redirect(win)
+  term.clear()
+  term.redirect(prevTerm)
   return win
 end
